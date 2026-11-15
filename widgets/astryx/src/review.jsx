@@ -66,13 +66,13 @@ export function ReviewDialog({items, index, onClose, onIndex}) {
 
 export function PhotoTile({it, onOpen, plus, ratio = 3 / 4, caption}) {
   return (
-    <VStack gap={1}>
-      <button type="button" className="bgw-tile" onClick={onOpen} aria-label={plus ? '사진 리뷰 전체 보기' : '사진 리뷰 보기'}>
+    <div style={{display: 'flex', flexDirection: 'column', gap: 6, width: '100%', minWidth: 0}}>
+      <button type="button" className="bgw-tile" style={{width: '100%'}} onClick={onOpen} aria-label={plus ? '사진 리뷰 전체 보기' : '사진 리뷰 보기'}>
         <div style={{aspectRatio: String(ratio), width: '100%'}}><img className="bgw-img" src={it.media[0]} alt="" loading="lazy" style={{objectPosition: '50% 30%'}} /></div>
         {plus ? <span className="bgw-plus"><span style={{fontSize: 22}}>{'+' + plus}</span><span style={{fontSize: 13, fontWeight: 500}}>사진 전체</span></span> : null}
       </button>
       {caption !== false ? <Text type="supporting" color="secondary" maxLines={1}>{caption || it.body || metaLine(it) || shortDate(it.date)}</Text> : null}
-    </VStack>
+    </div>
   );
 }
 
