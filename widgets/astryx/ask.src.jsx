@@ -8,11 +8,15 @@ import {Heading} from '@astryxdesign/core/Heading';
 import {Text} from '@astryxdesign/core/Text';
 import {Button} from '@astryxdesign/core/Button';
 import {VStack} from '@astryxdesign/core/VStack';
+import {IconButton} from '@astryxdesign/core/IconButton';
 import {EmptyState} from '@astryxdesign/core/EmptyState';
 import CSS_CORE from '@astryxdesign/core/astryx.css';
 import CSS_THEME from '@astryxdesign/theme-neutral/theme.css';
 import {ChatComposer, ChatMessageList, ChatMessage, ChatMessageBubble, ChatTokenizedText, ChatSystemMessage} from '@astryxdesign/core/Chat';
 
+const ACCENT = '#0284c7';
+const Spark = ({size = 16}) => (<svg width={size} height={size} viewBox="0 0 24 24" fill="none" aria-hidden="true" style={{color: ACCENT, flex: '0 0 auto'}}><path fill="currentColor" d="M11 22C11 18.8118 10.3312 16.7445 9.11816 15.4639C7.91652 14.1955 5.98995 13.5 3 13.5C2.44772 13.5 2 13.0523 2 12.5C2 11.9477 2.44772 11.5 3 11.5C5.98995 11.5 7.91652 10.8045 9.11816 9.53613C10.3312 8.25552 11 6.18819 11 3C11 2.44772 11.4477 2 12 2C12.5523 2 13 2.44772 13 3C13 6.18819 13.6688 8.25552 14.8818 9.53613C16.0835 10.8045 18.01 11.5 21 11.5C21.5523 11.5 22 11.9477 22 12.5C22 13.0523 21.5523 13.5 21 13.5C18.01 13.5 16.0835 14.1955 14.8818 15.4639C13.6688 16.7445 13 18.8118 13 22C13 22.5523 12.5523 23 12 23C11.4477 23 11 22.5523 11 22ZM12 8.72559C11.6348 9.55269 11.1639 10.2845 10.5693 10.9121C9.93684 11.5796 9.19236 12.1027 8.34473 12.5C9.19235 12.8973 9.93684 13.4204 10.5693 14.0879C11.1637 14.7153 11.6348 15.4467 12 16.2734C12.3652 15.4467 12.8363 14.7153 13.4307 14.0879C14.063 13.4206 14.807 12.8972 15.6543 12.5C14.807 12.1028 14.063 11.5794 13.4307 10.9121C12.8361 10.2845 12.3652 9.55269 12 8.72559Z"/></svg>);
+const Back = () => (<svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M15 18l-6-6 6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>);
 const SUGS = ['주문한 상품은 언제 출고되나요?', '교환·반품은 언제까지 신청할 수 있나요?', '품절된 상품은 다시 들어오나요?'];
 const DRAFT_KEY = 'bgwAskDraft';
 
@@ -39,7 +43,16 @@ function Ask({api}) {
   const [draft, setDraft] = useState('');
   const sid = useRef(null), lastQ = useRef('');
 
-  useEffect(() => { api.open = (b, p) => { if (b) setBoard(String(b)); setProduct(p ? String(p) : ''); setOpen(true); }; api.close = () => setOpen(false); }, []);
+  const msgsRef = useRef(msgs); msgsRef.current = msgs;
+  const reset = () => { setMsgs([]); setDraft(''); sid.current = null; };
+  const close = () => { if (history.state && history.state.bgwAsk) history.back(); else setOpen(false); };
+  useEffect(() => {
+    api.open = (b, p) => { if (b) setBoard(String(b)); setProduct(p ? String(p) : ''); setOpen(true); try { history.pushState({bgwAsk: 1}, ''); } catch (e) {} };
+    api.close = close;
+    const onPop = () => { setOpen(false); };
+    window.addEventListener('popstate', onPop);
+    return () => window.removeEventListener('popstate', onPop);
+  }, []);
   useEffect(() => {
     if (!open || botUp !== null) return;
     if (!C.bot) { setBotUp(false); return; }
@@ -69,14 +82,18 @@ function Ask({api}) {
   };
 
   const empty = (
-    <EmptyState title="무엇을 도와드릴까요?" description="주문·배송·교환, 편하게 물어보세요."
+    <EmptyState icon={<Spark size={28} />} title="무엇을 도와드릴까요?" description="주문·배송·교환, 편하게 물어보세요."
       actions={<VStack gap={1}>{SUGS.map(s => <Button key={s} variant="ghost" label={s} onClick={() => ask(s)} />)}</VStack>} />
   );
   return (
     <Theme theme={neutralTheme}>
-      <Dialog isOpen={open} onOpenChange={setOpen} width={680} maxHeight={700} purpose="info">
+      <Dialog isOpen={open} onOpenChange={(v) => { if (!v) close(); }} width={680} maxHeight={700} purpose="info">
         <div className="bgw-ax" style={{display: 'flex', flexDirection: 'column', height: 'min(700px, calc(100dvh - 32px))'}}>
-          <DialogHeader title="문의하기" subtitle="자주 묻는 질문으로 먼저 답해 드려요." onOpenChange={setOpen} />
+          <DialogHeader
+            title={<span style={{display: 'inline-flex', alignItems: 'center', gap: 8}}><Spark />문의하기</span>}
+            subtitle="자주 묻는 질문으로 먼저 답해 드려요."
+            startContent={msgs.length ? <IconButton label="처음으로" icon={<Back />} variant="ghost" onClick={reset} /> : null}
+            onOpenChange={(v) => { if (!v) close(); }} />
           <div style={{flex: '1 1 auto', minHeight: 0, overflow: 'auto', margin: '12px 0'}}>
             {msgs.length === 0 ? empty : <ChatMessageList isStreaming={busy} align="bottom">
               {msgs.map((m, i) => m.who === 'system'
@@ -103,7 +120,7 @@ function Ask({api}) {
   const api = {}; window.BGW_ASK_AX = api;
   const host = document.createElement('div'); host.id = 'bgw-ask-ax'; document.body.appendChild(host);
   const sr = host.attachShadow({mode: 'open'});
-  const st = document.createElement('style'); st.textContent = CSS_CORE.replace(/:root\b/g, ':host') + '\n' + CSS_THEME.replace(/:root\b/g, ':host') + '\n:host{all:initial}'; sr.appendChild(st);
+  const st = document.createElement('style'); st.textContent = CSS_CORE.replace(/:root\b/g, ':host') + '\n' + CSS_THEME.replace(/:root\b/g, ':host') + '\n:host{all:initial}\n[data-astryx-theme],:host{--color-accent:#0284c7;--color-on-accent:#ffffff;--color-text-accent:#0284c7;--color-icon-accent:#0284c7;--color-border-focus:#0284c7}'; sr.appendChild(st);
   const mountEl = document.createElement('div'); sr.appendChild(mountEl);
   createRoot(mountEl).render(<Ask api={api} />);
   document.addEventListener('click', (e) => {
