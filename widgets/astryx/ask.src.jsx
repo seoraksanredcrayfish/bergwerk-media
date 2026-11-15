@@ -48,7 +48,8 @@ function Ask({api}) {
 
   const toQa = (text) => {
     try { localStorage.setItem(DRAFT_KEY, JSON.stringify({board, product, subject: '', text: text || '', ts: Date.now()})); } catch (e) {}
-    location.href = C.write + '?board_no=' + board + (product ? '&product_no=' + product : '');
+    const pre = (location.pathname.match(/^\/skin-[^/]+/) || [''])[0];
+    location.href = pre + C.write + '?board_no=' + board + (product ? '&product_no=' + product : '');
   };
   const ask = (q) => {
     q = (q || '').trim(); if (!q || busy) return;
