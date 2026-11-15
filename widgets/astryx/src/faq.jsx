@@ -9,7 +9,7 @@ import {TextInput} from '@astryxdesign/core/TextInput';
 import {TabList, Tab} from '@astryxdesign/core/TabList';
 import {Collapsible, CollapsibleGroup} from '@astryxdesign/core/Collapsible';
 import {EmptyState} from '@astryxdesign/core/EmptyState';
-import {P, isMob, openAsk} from './shared.jsx';
+import {P, isMob, openAsk, useMobile} from './shared.jsx';
 
 const Search = () => (<svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="11" cy="11" r="7" stroke="currentColor" strokeWidth="2"/><path d="M20 20l-3.5-3.5" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/></svg>);
 export function parseFaq(root) {
@@ -35,7 +35,7 @@ function Prose({html}) {
 }
 export function Faq({d}) {
   const [qv, setQv] = useState(''); const [topic, setTopic] = useState('all');
-  const mob = isMob();
+  const mob = useMobile();
   const norm = (s) => s.toLowerCase().replace(/\s+/g, '');
   const groups = useMemo(() => {
     const k = norm(qv);

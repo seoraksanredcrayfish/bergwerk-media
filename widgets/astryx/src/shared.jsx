@@ -1,4 +1,5 @@
 import {createRoot} from 'react-dom/client';
+import {useEffect, useState} from 'react';
 import CSS_CORE from '@astryxdesign/core/astryx.css';
 import CSS_RESET from '@astryxdesign/core/reset.css';
 
@@ -41,3 +42,5 @@ export function mount(host, el, extraCss) {
 export function globalCss(id, css) { if (document.getElementById(id)) return; const s = document.createElement('style'); s.id = id; s.textContent = css; document.head.appendChild(s); }
 export function makeHost(id, before) { const h = document.createElement('div'); h.id = id; before.parentNode.insertBefore(h, before); return h; }
 export const openAsk = (b, p) => { if (window.BGW_ASK_AX && window.BGW_ASK_AX.open) window.BGW_ASK_AX.open(b || '', p || ''); };
+
+export function useMobile() { const [m, setM] = useState(isMob()); useEffect(() => { const f = () => setM(isMob()); addEventListener('resize', f); return () => removeEventListener('resize', f); }, []); return m; }

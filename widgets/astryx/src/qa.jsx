@@ -15,7 +15,7 @@ import {Pagination} from '@astryxdesign/core/Pagination';
 import {Collapsible} from '@astryxdesign/core/Collapsible';
 import {EmptyState} from '@astryxdesign/core/EmptyState';
 import {AspectRatio} from '@astryxdesign/core/AspectRatio';
-import {P, isMob, openAsk} from './shared.jsx';
+import {P, isMob, openAsk, useMobile} from './shared.jsx';
 
 const Lock = () => (<svg width="12" height="12" viewBox="0 0 12 12" aria-label="비밀글" role="img" style={{color: 'var(--color-icon-secondary, #888)', flex: '0 0 12px'}}><rect x="2" y="5.2" width="8" height="5.8" rx="1.2" fill="currentColor"/><path d="M3.8 5.2V3.8a2.2 2.2 0 0 1 4.4 0v1.4" fill="none" stroke="currentColor" strokeWidth="1.2"/></svg>);
 const Search = () => (<svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="11" cy="11" r="7" stroke="currentColor" strokeWidth="2"/><path d="M20 20l-3.5-3.5" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/></svg>);
@@ -40,7 +40,7 @@ export function parseQaList(host) {
   return {rows, types, last, cur, hasMore, q: sp.get('search') || '', key: sp.get('search_key') || 'content', intro: (host.querySelector('.q14-intro') || {}).textContent || ''};
 }
 export function QaList({d}) {
-  const mob = isMob();
+  const mob = useMobile();
   const [q, setQ] = useState(/ 문의$/.test(d.q) ? '' : d.q);
   const go = (search) => { const u = new URL(location.href); u.search = '?board_no=6' + (search ? '&search_date=all&search_key=content&search=' + encodeURIComponent(search) : ''); location.href = u.toString(); };
   const curType = (d.types.find(t => t.cur) || {}).label || '전체';
