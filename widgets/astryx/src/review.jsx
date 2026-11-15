@@ -32,7 +32,7 @@ export function ReviewDialog({items, index, onClose, onIndex}) {
   const media = it.media || [];
   return (
     <Dialog isOpen onOpenChange={(v) => { if (!v) close(); }} width={mob ? '100%' : 980} maxHeight={mob ? '100%' : 720} padding={0}>
-      <div style={{display: 'grid', gridTemplateColumns: !mob && media.length ? 'minmax(0,1.25fr) minmax(0,1fr)' : '1fr', height: mob ? '100dvh' : 'min(720px, 88vh)', overflow: mob ? 'auto' : 'hidden'}}>
+      <div style={{display: 'grid', width: '100%', gridTemplateColumns: !mob && media.length ? 'minmax(0,1.25fr) minmax(0,1fr)' : '1fr', height: mob ? '100dvh' : 'min(720px, 88vh)', overflow: mob ? 'auto' : 'hidden'}}>
         {media.length ? (
           <div style={{position: 'relative', background: 'var(--color-background-muted, #f4f4f4)', display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: mob ? 320 : 0}}>
             <img src={media[mi]} alt="" style={{display: 'block', maxWidth: '100%', maxHeight: mob ? '70vh' : '100%', objectFit: 'contain'}} />
@@ -129,7 +129,7 @@ export function DetailReviews({pno}) {
       </HStack>
       {!items ? <Grid columns={mob ? 3 : 6} gap={2}>{[...Array(6)].map((_, i) => <AspectRatio key={i} ratio={3 / 4}><Skeleton width="100%" height="100%" /></AspectRatio>)}</Grid> : null}
       {photos.length ? (
-        <div style={{display: 'grid', gridTemplateColumns: 'repeat(' + (mob ? 3 : 6) + ', minmax(0,1fr))', gap: mob ? '12px 6px' : '16px 8px', alignItems: 'start'}}>
+        <div style={{display: 'grid', width: '100%', gridTemplateColumns: 'repeat(' + (mob ? 3 : 6) + ', minmax(0,1fr))', gap: mob ? '12px 6px' : '16px 8px', alignItems: 'start'}}>
           {photos.slice(0, heroN).map((it, i) => {
             const isLast = !gridOpen && i === heroN - 1 && photoTotal > heroN;
             return <PhotoTile key={it.no} it={it} plus={isLast ? photoTotal - heroN + 1 : 0} onOpen={() => isLast ? setGridOpen(true) : setDlg({list: photos, i})} />;
@@ -177,7 +177,7 @@ export function BoardList({rows, pages, writeHref}) {
       </HStack>
       {photos.length ? <VStack gap={3}>
         <HStack gap={2} vAlign="baseline"><Heading level={3}>사진 리뷰</Heading><Text type="supporting" color="secondary">{photos.length}</Text></HStack>
-        <div style={{display: 'grid', gridTemplateColumns: 'repeat(' + cols + ', minmax(0,1fr))', gap: 12, alignItems: 'start'}}>
+        <div style={{display: 'grid', width: '100%', gridTemplateColumns: 'repeat(' + cols + ', minmax(0,1fr))', gap: 12, alignItems: 'start'}}>
           {colsArr.map((c, ci) => <VStack key={ci} gap={4}>{c.map(({it, i}) =>
             <VStack key={it.no} gap={1}>
               <PhotoTile it={it} ratio={[3 / 4, 4 / 5, 2 / 3, 1][(it.no % 4)]} caption={false} onOpen={() => setDlg({list: shown, i})} />
