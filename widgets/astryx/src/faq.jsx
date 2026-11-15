@@ -53,9 +53,9 @@ export function Faq({d}) {
       {qv ? <Text type="supporting" color="secondary">{hits ? '“' + qv + '” 검색 결과 ' + hits + '개' : ''}</Text> : null}
       {!qv && d.spec.length ? <VStack gap={3}>
         <Text type="supporting" weight="bold" color="secondary">한눈에 보기</Text>
-        <Grid columns={{minWidth: mob ? 140 : 160, repeat: 'fill'}} gap={3}>
-          {d.spec.map(s => <Card key={s.k} padding={4} variant="muted"><VStack gap={1}><Text type="supporting" color="secondary">{s.k}</Text><Text type="display-3" hasTabularNumbers>{s.v}</Text><Text type="supporting" color="secondary">{s.s}</Text></VStack></Card>)}
-        </Grid>
+        <div style={{display: 'grid', gridTemplateColumns: mob ? 'repeat(2, minmax(0,1fr))' : 'repeat(' + Math.min(5, d.spec.length) + ', minmax(0,1fr))', gap: 12}}>
+          {d.spec.map(s => <Card key={s.k} padding={4} variant="muted"><VStack gap={1}><Text type="supporting" color="secondary">{s.k}</Text><Text type={mob ? 'large' : 'display-3'} weight="bold" hasTabularNumbers>{s.v}</Text><Text type="supporting" color="secondary">{s.s}</Text></VStack></Card>)}
+        </div>
       </VStack> : null}
       {!qv ? <TabList value={topic} onChange={setTopic} overflow="scroll">
         <Tab value="all" label="전체" />

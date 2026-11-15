@@ -129,12 +129,12 @@ export function DetailReviews({pno}) {
       </HStack>
       {!items ? <Grid columns={mob ? 3 : 6} gap={2}>{[...Array(6)].map((_, i) => <AspectRatio key={i} ratio={3 / 4}><Skeleton width="100%" height="100%" /></AspectRatio>)}</Grid> : null}
       {photos.length ? (
-        <Grid columns={mob ? 3 : 6} gap={2} rowGap={4}>
+        <div style={{display: 'grid', gridTemplateColumns: 'repeat(' + (mob ? 3 : 6) + ', minmax(0,1fr))', gap: mob ? '12px 6px' : '16px 8px', alignItems: 'start'}}>
           {photos.slice(0, heroN).map((it, i) => {
             const isLast = !gridOpen && i === heroN - 1 && photoTotal > heroN;
             return <PhotoTile key={it.no} it={it} plus={isLast ? photoTotal - heroN + 1 : 0} onOpen={() => isLast ? setGridOpen(true) : setDlg({list: photos, i})} />;
           })}
-        </Grid>) : null}
+        </div>) : null}
       {gridOpen && photos.length < photoTotal ? <HStack hAlign="center"><Text type="supporting" color="secondary">사진을 불러오는 중… {photos.length} / {photoTotal}</Text></HStack> : null}
       {items && items.length ? <VStack gap={3}>
         <Grid columns={{minWidth: mob ? 260 : 420, repeat: 'fill'}} gap={3}>
@@ -171,7 +171,7 @@ export function BoardList({rows, pages, writeHref}) {
   const colsArr = [...Array(cols)].map(() => []); shown.forEach((it, i) => colsArr[i % cols].push({it, i}));
   return (
     <VStack gap={6}>
-      <HStack vAlign="end" hAlign="between" gap={3}>
+      <HStack vAlign="end" hAlign="between" gap={3} wrap="wrap">
         <VStack gap={1}><Heading level={1}>고객 리뷰</Heading><Text type="body" color="secondary">실제로 입어 본 분들의 사진과 이야기예요.</Text></VStack>
         {writeHref ? <Button label="리뷰 쓰기" variant="primary" href={writeHref} /> : null}
       </HStack>
